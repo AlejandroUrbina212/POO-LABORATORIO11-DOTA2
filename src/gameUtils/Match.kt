@@ -1,6 +1,7 @@
 package gameUtils
 
 import characters.Heroe
+import characters.Tower
 import interfaces.Narrator
 import narrators.NeilDeGrasseTysonTheScienceGuy
 
@@ -10,7 +11,6 @@ class Match <T>(val narrador: T, var radiantTeam: Team?, var direTeam: Team?,
 
     fun generateArrayOfHeroes(): ArrayList<Heroe>
     {
-        val newArrayListOfHeroes: ArrayList<Heroe> = ArrayList()
         val antimage = Heroe("Antimage", "strenght")
         val axe = Heroe("Axe", "strength")
         val bane = Heroe("Bane", "strength")
@@ -31,30 +31,15 @@ class Match <T>(val narrador: T, var radiantTeam: Team?, var direTeam: Team?,
         val sandKing = Heroe("Sand King", "agility")
         val stormSpirit = Heroe("Storm Spirit", "agility")
         val sven = Heroe("Sven", "agility")
-        val tiny = Heroe("Sven", "agility")
+        val tiny = Heroe("Tiny", "agility")
         val vengefulspirit = Heroe("Vengeful Spirit", "agility")
-        newArrayListOfHeroes.add(antimage)
-        newArrayListOfHeroes.add(axe)
-        newArrayListOfHeroes.add(bane)
-        newArrayListOfHeroes.add(bloodSeeker)
-        newArrayListOfHeroes.add(crystalMaiden)
-        newArrayListOfHeroes.add(drowRanger)
-        newArrayListOfHeroes.add(earthShaker)
-        newArrayListOfHeroes.add(juggernaut)
-        newArrayListOfHeroes.add(mirana)
-        newArrayListOfHeroes.add(nevermore)
-        newArrayListOfHeroes.add(morphling)
-        newArrayListOfHeroes.add(phantomLancer)
-        newArrayListOfHeroes.add(puck)
-        newArrayListOfHeroes.add(pudge)
-        newArrayListOfHeroes.add(razor)
-        newArrayListOfHeroes.add(sandKing)
-        newArrayListOfHeroes.add(stormSpirit)
-        newArrayListOfHeroes.add(sven)
-        newArrayListOfHeroes.add(tiny)
-        newArrayListOfHeroes.add(vengefulspirit)
+        val array = arrayListOf<Heroe>(
+                antimage, axe, bane, bloodSeeker, crystalMaiden, drowRanger,earthShaker,
+                juggernaut, mirana, nevermore, morphling, phantomLancer, puck, pudge,
+                razor, sandKing, stormSpirit, sven, tiny, vengefulspirit
+        )
 
-        return newArrayListOfHeroes
+        return array
     }
     fun welcome(): String{
         return narrateSomething(narrador, "welcome")
@@ -84,23 +69,10 @@ class Match <T>(val narrador: T, var radiantTeam: Team?, var direTeam: Team?,
             }
             this.deathsByDire += numberOfKills
         }
-        return narrateSomething(narrador,"twoOrMoreKillsOccurred")
-    }
-
-    fun fiveKillsOccurred(isRadiant: Boolean) :String{
-        if(isRadiant){
-            for (i in 0..5){
-                this.direTeam!!.heroes.removeAt(0)
-
-            }
-            this.deathsByRadiant += 5
-        }else {
-            for (i in 0..5){
-                this.radiantTeam!!.heroes.removeAt(0)
-            }
-            this.deathsByDire += 5
+        if (numberOfKills == 5){
+            return narrateSomething(narrador,"fiveKillsOccurred")
         }
-        return narrateSomething(narrador,"fiveKillsOccurred")
+        return narrateSomething(narrador,"twoOrMoreKillsOccurred")
     }
     fun towerKilled(isRadiant: Boolean): String{
         if (isRadiant){
@@ -114,21 +86,37 @@ class Match <T>(val narrador: T, var radiantTeam: Team?, var direTeam: Team?,
     }
     fun ancientKilled(isRadiant: Boolean): String{
         if (isRadiant){
+            this.direTeam!!.ancient.isDead = true
             this.deathsByRadiant += 1
             this.whoWon = 0
             return narrateSomething(narrador,"radiantWins")
-
         }
+        this.radiantTeam!!.ancient.isDead = true
         this.deathsByDire += 1
         this.whoWon = 1
         return narrateSomething(narrador,"direWins")
 
     }
-
-
-
     private fun narrateSomething(narrator: Narrator, eventType: String): String{
         return narrator.narrate(eventType)
+    }
+    fun showMenu(noTowersInOneTeam: Boolean): String {
+        return if (noTowersInOneTeam) {
+            """
+        Menú:
+        1. Ocurrieron muertes
+        2. Matan torres
+        3. Matan ancient
+
+    """.trimIndent()
+        } else {
+            """
+        Menú:
+        1. Ocurrieron muertes
+        2. Matan torres
+
+    """.trimIndent()
+        }
     }
 
 }
